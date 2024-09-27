@@ -1,12 +1,11 @@
 This project is based on <a href="https://github.com/mjasny/vlc-youtubeDL">youtube-dl.lua</a><br>
-Thid is an extended version, using <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a><br>
-and with chapters(bookmarks) and subtitles support :)<br>
+Thid is an extended version, using [yt-dlp](https://github.com/yt-dlp/yt-dlp) and chapters(bookmarks)/subtitles support :)<br>
 
 # yt-vlc
-A vlc addon for [youtube-dl](http://ytdl-org.github.io/youtube-dl/) integration.
+A vlc addon for [yt-dlp](https://github.com/yt-dlp/yt-dlp) integration.
 
 ### Prerequisites
-- A working <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a> installation (`yt-dlp` must be in `$PATH`)
+- A working [yt-dlp](https://github.com/yt-dlp/yt-dlp) installation (`yt-dlp` must be in `$PATH`)
 
 ### Installation
 Put [`0yt-vlc.lua`](https://raw.githubusercontent.com/donisos1146/yt-vlc/refs/heads/main/0yt-dlp.lua) into:
