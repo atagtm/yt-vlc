@@ -12,9 +12,9 @@ prefix 			= "vlcsub-"
 skip_auto_if_any	= true		-- Don't process auto translations if setting is 'any' (there can be 100+ cross-translations/video)
 
 local ytdlp = { }
-ytdlp.subext		= { srt = 1, vtt = 1 } -- supported subtitle formats
-ytdlp.pref_sublangs	= vlc.var.inherit(nil, 'sub-language') -- subbtilte settings in Preferences->Sublbtitles/OSD
-ytdlp.prefres 		= vlc.var.inherit(nil, "preferred-resolution") -- resolution settings in (all)Preferences->input/codec
+ytdlp.subext		= { srt = true, vtt = true } -- supported subtitle formats
+ytdlp.pref_sublangs	= vlc.var.inherit( nil, "sub-language" ) 		-- subbtilte settings in Preferences->Sublbtitles/OSD
+ytdlp.prefres 		= vlc.var.inherit( nil, "preferred-resolution" ) 	-- resolution settings in (all)Preferences->Input/Codecs
 
 
 function print( mode, ... )
@@ -38,7 +38,7 @@ function ytdlp:get_fmt()
 			fmt = " -S \"res:%d\" "
 		end
 		return fmt:format( self.prefres, codec)
-	elseif force_h264 then  --else yt-dlp's default selection (best)
+	elseif force_h264 then  -- else yt-dlp's default selection (best)
 		fmt = " -S \"%s\" "
 		return fmt:format( codec )
 	end
@@ -477,7 +477,7 @@ function parse()
 							if res then -- thread is OK
 								if ret then -- got results, thread has been finished
 									table.insert( self.suburls, ret )
-									--print("err","SUB OKAY: " .. ret.url)
+									--print( "err", "SUB OKAY: " .. ret.url )
 								else -- continue the thread
 									table.insert( co, thing )
 								end
@@ -501,9 +501,9 @@ function parse()
 				end
 			end
 			if #input_slave > 0 then
-				table.insert( item.options, ':input-slave='..table.concat( input_slave, '#' ) )
+				table.insert( item.options, ":input-slave=" .. table.concat( input_slave, '#' ) )
 			end
-			-- add track to the playlist
+			-- Finally add the track to the playlist
 			table.insert( tracks, item )
 		end
 	end --while
@@ -519,7 +519,7 @@ function probe()
 		local str = ''
 		while #str < 9 and peeklen < 64 do --prevent infinite loop
 			str = vlc.peek( peeklen ):gsub( "%s", '' )
-			peeklen = peeklen+1
+			peeklen = peeklen + 1
 		end
 		return string.lower( str ) == "<!doctype" -- peeklen
 	end
