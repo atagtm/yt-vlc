@@ -1,5 +1,5 @@
 This project is based on <a href="https://github.com/mjasny/vlc-youtubeDL">youtube-dl.lua</a><br>
-Thid is an extended version, using [yt-dlp](https://github.com/yt-dlp/yt-dlp) and chapters(bookmarks)/subtitles support :)<br>
+Thisd is an extended version, using [yt-dlp](https://github.com/yt-dlp/yt-dlp), with chapters(bookmarks)/subtitles support :)<br>
 
 # yt-vlc
 A vlc addon for [yt-dlp](https://github.com/yt-dlp/yt-dlp) integration.
