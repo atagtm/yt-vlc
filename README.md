@@ -19,6 +19,6 @@ Simply open a YouTube link in VLC.
 ### Setup
 Change your settings in VLC, related to subtitle languages and the prefered video resolution
 
-### Prewiev
+### Preview
 ![Screenshot from 2024-09-27 23-11-09](https://github.com/user-attachments/assets/891c5e4c-a7e9-41f7-a8dc-85844b13b7b0)
 ![Screenshot from 2024-09-27 22-59-43](https://github.com/user-attachments/assets/e7112c61-e891-4e82-9874-52745eb3f6fa)
