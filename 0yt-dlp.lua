@@ -1,12 +1,12 @@
 -- Settings: change it to false, to disable
 convert_subs 		= true		-- change it to false if you don't want to download subs... (let VLC do what it wants)
-force_h264 			= true		-- Useful on old hardware, set it to false for better (?) video quality
+force_h264 		= true		-- Useful on old hardware, set it to false for better (?) video quality
 do_not_overlap		= true		-- Skip repeating previous line in YT autocaptions
 def_sub_int 		= 0				-- seconds, change to 0 to disable. Maximum time interval to keep caption on screen.
 
 -- Don't change these if you're not 100% sure what are you doing :)
 thread_concurrency	= 5			-- number of 'threads' when downloading subtitles.
-prefix = "vlcsub-"
+prefix 			= "vlcsub-"
 
 -- ONLY FOR TESTING:
 skip_auto_if_any	= true		-- Don't process auto translations if setting is 'any' (there can be 100+ cross-translations/video)
@@ -316,13 +316,13 @@ function parse()
 			--metainfo.location = json.location or "unknown"
 			
 			local item = {
-				path					= outurl and outurl or audiourl,
+				path				= outurl and outurl or audiourl,
 				name				= json.title,
 				duration			= json.duration,
 
 				-- for a list of these check https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/README.txt  
-				title					= json.track or json.title,
-				artist					= json.artist or json.creator or json.uploader or json.playlist_uploader,
+				title				= json.track or json.title,
+				artist				= json.artist or json.creator or json.uploader or json.playlist_uploader,
 				genre				= json.genre or category,
 				copyright			= json.license,
 				album				= json.album or json.playlist_title or json.playlist,
@@ -332,15 +332,15 @@ function parse()
 				date					= year,
 				setting				= json.location or "unknown",
 			
-				url					= json.webpage_url or self.v_url,
-				arturl					= json.thumbnail or thumbnail,
+				url				= json.webpage_url or self.v_url,
+				arturl				= json.thumbnail or thumbnail,
 				trackid				= json.track_id or json.episode_id or json.id,
 				tracktotal			= json.n_entries or 300,
 				season				= json.season or json.season_number or json.season_id,
 				episode				= json.episode or json.episode_number,
-				show_name		= json.series,
+				show_name			= json.series,
 
-				meta					= metainfo,
+				meta				= metainfo,
 				options				= { ":start-time=" .. ( json.start_time or 0 ) },
 			}
 
