@@ -8,7 +8,7 @@ A vlc addon for [yt-dlp](https://github.com/yt-dlp/yt-dlp) integration.
 - A working [yt-dlp](https://github.com/yt-dlp/yt-dlp) installation (`yt-dlp` must be in `$PATH`)
 
 ### Installation
-Put [`0yt-vlc.lua`](https://raw.githubusercontent.com/donisos1146/yt-vlc/refs/heads/main/0yt-dlp.lua) into:
+Put [`0yt-vlc.lua`](https://github.com/donisos1146/yt-vlc/blob/main/0yt-dlp.lua) into:
 - In Windows: `%APPDATA%\vlc\lua\playlist\`
 - In Mac OS X: `/Users/%your_name%/Library/Application Support/org.videolan.vlc/lua/playlist/`
 - In Linux: `~/.local/share/vlc/lua/playlist/`
