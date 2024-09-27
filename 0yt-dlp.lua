@@ -2,24 +2,24 @@
 convert_subs 		= true		-- change it to false if you don't want to download subs... (let VLC do what it wants)
 force_h264 		= true		-- Useful on old hardware, set it to false for better (?) video quality
 do_not_overlap		= true		-- Skip repeating previous line in YT autocaptions
-def_sub_int 		= 0				-- seconds, change to 0 to disable. Maximum time interval to keep caption on screen.
+def_sub_int 		= 0		-- seconds, change to 0 to disable. Maximum time interval to keep caption on screen.
 
 -- Don't change these if you're not 100% sure what are you doing :)
-thread_concurrency	= 5			-- number of 'threads' when downloading subtitles.
+thread_concurrency	= 5		-- number of 'threads' when downloading subtitles.
 prefix 			= "vlcsub-"
 
 -- ONLY FOR TESTING:
 skip_auto_if_any	= true		-- Don't process auto translations if setting is 'any' (there can be 100+ cross-translations/video)
 
 local ytdlp = { }
-ytdlp.subext			= { srt = 1, vtt = 1 } -- supported subtitle formats
-ytdlp.pref_sublangs		= vlc.var.inherit(nil, 'sub-language') -- subbtilte settings in Preferences->Sublbtitles/OSD
-ytdlp.prefres 			= vlc.var.inherit(nil, "preferred-resolution") -- resolution settings in (all)Preferences->input/codec
+ytdlp.subext		= { srt = 1, vtt = 1 } -- supported subtitle formats
+ytdlp.pref_sublangs	= vlc.var.inherit(nil, 'sub-language') -- subbtilte settings in Preferences->Sublbtitles/OSD
+ytdlp.prefres 		= vlc.var.inherit(nil, "preferred-resolution") -- resolution settings in (all)Preferences->input/codec
 
 
 function print( mode, ... )
 	if mode == "dbg" or mode == "warn" or mode == "err" or mode == "info" then
-		vlc.msg[mode]( ... )
+		vlc.msg[ mode ]( ... )
 	else
 		vlc.msg.dbg( mode, ... )
 	end
@@ -29,28 +29,28 @@ end
 function ytdlp:get_fmt()
 	local fmt = ''
 	--local codec = "codec:avc"
-	local codec = "codec:avc:m4a"
 	--local codec = "+codec:avc:m4a"
+	local codec = "codec:avc:m4a"
 	if self.prefres > 0 then
 		if force_h264 then
 			fmt = " -S \"res:%d,%s\" "
 		else
 			fmt = " -S \"res:%d\" "
 		end
-		return fmt:format(self.prefres, codec)
+		return fmt:format( self.prefres, codec)
 	elseif force_h264 then  --else yt-dlp's default selection (best)
 		fmt = " -S \"%s\" "
-		return fmt:format(codec)
+		return fmt:format( codec )
 	end
-	--return fmt:gsub("%%d", self.prefres)
+	--return fmt:gsub( "%%d", self.prefres )
 end
 
-function ytdlp:get_format_url(format)
+function ytdlp:get_format_url( format )
 	-- prefer streaming formats
 	return format.manifest_url and format.manifest_url or format.url
 end
 
-function ytdlp:get_timecode(t, dur)
+function ytdlp:get_timecode( t, dur )
 	return ( tonumber( dur or 0 ) > 3600 ) and os.date( "!%H:%M:%S - ", t ) or os.date( "%M:%S - ", t ) -- !UTC
 end
 
