@@ -17,5 +17,6 @@ Put [`0yt-vlc.lua`](https://raw.githubusercontent.com/donisos1146/yt-vlc/refs/he
 Simply open a YouTube link in VLC.
 
 ### Setup
-Change your settings in VLC, related to subtitles and prefered resolution
+Change your settings in VLC, related to subtitle languages and the prefered video resolution
+
  
