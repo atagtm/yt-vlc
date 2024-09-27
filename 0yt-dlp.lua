@@ -246,7 +246,7 @@ function parse()
 				local a_set, v_set = false, false
 				local idx = #json.formats
 				while ( not a_set and not v_set and idx > 0 ) do
-					local format = json.fotmats[idx]
+					local format = json.formats[ idx ]
 					idx = idx - 1
 					
 					if ( not v_set and ( format.vcodec and format.vcodec ~= "none" ) ) then
