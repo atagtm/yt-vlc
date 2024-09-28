@@ -414,9 +414,9 @@ function parse()
 					end
 					if auto and not self.suburls[ self.preflang[ lng ] ] then
 						if val.url then -- simple array
-							if self.subext[ v.ext ] then
+							if self.subext[ val.ext ] then
 								local index = self.preflang[ lng ] or ( #self.suburls + 1 )
-								self.suburls[ index ] = { lng = lng, url = val.url, ext = v.ext }
+								self.suburls[ index ] = { lng = lng, url = val.url, ext = val.ext }
 							end
 						else -- multi array
 							for i, v in ipairs( val ) do
