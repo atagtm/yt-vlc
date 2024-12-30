@@ -215,7 +215,7 @@ function parse()
 	local file, tmp
 	if isWin() then
 		tmp = getTempPath(os.tmpname())
-		cmd =  'cmd /c "title Fetching video links, this can take a while ... && ' .. cmd .. ' > ' .. tmp .. '"'
+		cmd =  'cmd /c "title Fetching video links, this can take a while ... && ' .. cmd:gsub( "&", "^&" ) .. ' > ' .. tmp .. '"'
 		os.execute(cmd)
 		file = assert(io.open(tmp))
 	else
