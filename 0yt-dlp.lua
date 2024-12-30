@@ -28,9 +28,10 @@ end
 -- Pick the most suited format available
 function ytdlp:get_fmt()
 	local fmt = ''
-	--local codec = "codec:avc"
+	local codec = "codec:avc"
 	--local codec = "+codec:avc:m4a"
-	local codec = "codec:avc:m4a"
+	--local codec = "codec:avc:m4a"
+	--local codec = "codec:h264"
 	if self.prefres > 0 then
 		if force_h264 then
 			fmt = " -S \"res:%d,%s\" "
@@ -54,15 +55,20 @@ function ytdlp:get_timecode( t, dur )
 	return ( tonumber( dur or 0 ) > 3600 ) and os.date( "!%H:%M:%S - ", t ) or os.date( "%M:%S - ", t ) -- !UTC
 end
 
-local sep  = ( package.config ).sub( 1,  1 ) -- '\' or '/'
-function getTempPath()
+_sep  = string.sub( package.config, 1, 1 ) -- '\' or '/'
+function getTempPath( str )
 	for _, env in ipairs { "TEMP", "TMPDIR" } do
 		local temp = os.getenv( env )
 		if temp then 
-			return temp .. sep .. prefix
+			--return temp .. _sep .. str
+			return temp .. str
 		end
 	end
-	return "/tmp/" .. prefix
+	return "/tmp/" .. str
+end
+
+function isWin()
+	return _sep == "\\"
 end
 
 function vtt2srt( tbl )
@@ -205,8 +211,16 @@ function parse()
 
 	-- Using yt-dlp 
 	-- https://github.com/yt-dlp/yt-dlp
-	local cmd = "yt-dlp --quiet --dump-json --flat-playlist " .. ytdlp:get_fmt() .. " \"" .. self.v_url .."\""
-	local file = assert( io.popen( cmd, 'r' ) )
+	local cmd = "yt-dlp --dump-json --flat-playlist " .. ytdlp:get_fmt() .. " \"" .. self.v_url .."\""
+	local file, tmp
+	if isWin() then
+		tmp = getTempPath(os.tmpname())
+		cmd =  'cmd /c "title Fetching video links, this can take a while ... && ' .. cmd .. ' > ' .. tmp .. '"'
+		os.execute(cmd)
+		file = assert(io.open(tmp))
+	else
+		file = assert( io.popen( cmd, 'r' ) )
+	end
 	-- if the link points to a playlist we need to iterate over each element
 	local decode = require( "dkjson" ).decode -- load additional json routines
 	while true do
@@ -434,7 +448,7 @@ function parse()
 			-- process subtitles
 			--------------------------------
 			if self.pref_sublangs ~= '' then 
-				self.path = getTempPath() ..  item.trackid
+				self.path = getTempPath( prefix ) ..  item.trackid
 				
 				-- Processing subs
 				-- Using coroutines to save some time :p
@@ -508,6 +522,9 @@ function parse()
 		end
 	end --while
 	file:close()
+	if tmp then --cleanup
+		pcall(os.remove, tmp)
+	end
 	return tracks
 end
 
