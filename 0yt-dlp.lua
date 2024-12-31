@@ -16,9 +16,14 @@ ytdlp.subext		= { srt = true, vtt = true } -- supported subtitle formats
 ytdlp.pref_sublangs	= vlc.var.inherit( nil, "sub-language" ) 		-- subbtilte settings in Preferences->Sublbtitles/OSD
 ytdlp.prefres 		= vlc.var.inherit( nil, "preferred-resolution" ) 	-- resolution settings in (all)Preferences->Input/Codecs
 
-
+dbg, warn, err, info = "dbg", "warn", "err", "info"
 function print( mode, ... )
-	if mode == "dbg" or mode == "warn" or mode == "err" or mode == "info" then
+	local msgs = { ... }
+	if #msgs == 0 then 
+		vlc.msg.err("function print: ... is EMPTY")
+		return 
+	end
+	if mode == dbg or mode == warn or mode == err or mode == info then
 		vlc.msg[ mode ]( ... )
 	else
 		vlc.msg.dbg( mode, ... )
@@ -26,19 +31,19 @@ function print( mode, ... )
 end
 
 -- Pick the most suited format available
-function ytdlp:get_fmt()
+function ytdlp:get_fmt( res )
 	local fmt = ''
 	local codec = "codec:avc"
 	--local codec = "+codec:avc:m4a"
 	--local codec = "codec:avc:m4a"
 	--local codec = "codec:h264"
-	if self.prefres > 0 then
+	if res or ( self.prefres > 0 ) then
 		if force_h264 then
 			fmt = " -S \"res:%d,%s\" "
 		else
 			fmt = " -S \"res:%d\" "
 		end
-		return fmt:format( self.prefres, codec)
+		return fmt:format( ( res or self.prefres ), codec)
 	elseif force_h264 then  -- else yt-dlp's default selection (best)
 		fmt = " -S \"%s\" "
 		return fmt:format( codec )
@@ -74,11 +79,11 @@ end
 function vtt2srt( tbl )
 	local self = { suburls = tbl, path = ytdlp.path }
 	local input, err = vlc.stream( tbl.url )
-	--print( "err", "opening url: " .. tbl.url )
+	--print( err, "opening url: " .. tbl.url )
 	if input then
 		-- skipping live subs (no VLC support)
 		if input:read(7) == "#EXTM3U" then
-			print("err", "yt-dlp.lua: #EXTM3U found, SKIP")
+			print(err, "yt-dlp.lua: #EXTM3U found, SKIP")
 			if _TESTING then
 				input:close()
 			end
@@ -191,11 +196,11 @@ function vtt2srt( tbl )
 				self.suburls.url = ofName
 			else
 				-- keep the url in the list (failback)
-				print( "err", "yt-dlp.lua cannot open " .. ofName .. " for writing: " .. e )
+				print( err, "yt-dlp.lua cannot open " .. ofName .. " for writing: " .. e )
 			end
 		end
 	else
-		print( "err", "yt-dlp.lua stream ERROR: " .. err )
+		print( err, "yt-dlp.lua stream ERROR: " .. err )
 		--self.suburls[ i ] = nil
 		self.suburls = nil
 	end
@@ -211,13 +216,24 @@ function parse()
 
 	-- Using yt-dlp 
 	-- https://github.com/yt-dlp/yt-dlp
-	local cmd = "yt-dlp --dump-json --flat-playlist " .. ytdlp:get_fmt() .. " \"" .. self.v_url .."\""
+	-- 
+	-- UPDATE: add oppurtunity to use custom resolution regardless of VLC settings:
+	-- add '&res=X' to the end of the link....
+	-- eg: https://youtu.be/V1dId&res=1080
+	local s, e, res = string.find(self.v_url, "&res=(%d+)")
+	if res then
+		self.v_url = self.v_url:sub( 1, ( s - 1 ) ) .. self.v_url:sub( e + 1 )
+	end
+
+	local cmd = "yt-dlp --dump-json --flat-playlist " .. ytdlp:get_fmt( res ) .. " \"" .. self.v_url .."\""
 	local file, tmp
 	if isWin() then
-		tmp = getTempPath(os.tmpname())
+		tmp = getTempPath( os.tmpname() )
 		cmd =  'cmd /c "title Fetching video links, this can take a while ... && ' .. cmd:gsub( "&", "^&" ) .. ' > ' .. tmp .. '"'
-		os.execute(cmd)
-		file = assert(io.open(tmp))
+		--print(err, tmp)
+		--print(err, cmd)
+		os.execute( cmd )
+		file = assert( io.open( tmp ) )
 	else
 		file = assert( io.popen( cmd, 'r' ) )
 	end
@@ -228,13 +244,13 @@ function parse()
 		if not line then
 			break
 		end
-		--print( "err", "line:" .. line .. "|" )
+		--print( err, "line:" .. line .. "|" )
 		local json = decode( line )
 		if not json then
 			--local f = io.open( "~/error.out", "w+" )
 			--f:write( line )
 			--f:close()
-			print( "err", "ytdlp: JSON decode has failed" )
+			print( err, "ytdlp: JSON decode has failed" )
 			break 
 		end
 		
@@ -457,10 +473,10 @@ function parse()
 				local function startThread( worker, tbl )
 					local res, err = coroutine.resume( worker, tbl )
 					if res then
-						--print( "err","creating thread " .. i )
+						--print( err,"creating thread " .. i )
 						table.insert( co, worker )
 					--else
-						--print( "err", "Failed to create thread " .. tostring( err ) .. " ( " .. tostring( tbl.url ) .. " )" )
+						--print( err, "Failed to create thread " .. tostring( err ) .. " ( " .. tostring( tbl.url ) .. " )" )
 					end
 				end
 
@@ -469,10 +485,10 @@ function parse()
 					local worker = coroutine.create( vtt2srt )
 					if #co < thread_concurrency then
 						startThread( worker, tbl )
-						--print( "err", "Started thread " .. tbl.lng )
+						--print( err, "Started thread " .. tbl.lng )
 					else
 						table.insert( queue, { worker = worker, tbl = tbl } )
-						--print( "err", "Queued thread " .. tbl.lng )
+						--print( err, "Queued thread " .. tbl.lng )
 					end
 				end
 				local queueIdx, queueSize = 1, #queue
@@ -491,12 +507,12 @@ function parse()
 							if res then -- thread is OK
 								if ret then -- got results, thread has been finished
 									table.insert( self.suburls, ret )
-									--print( "err", "SUB OKAY: " .. ret.url )
+									--print( err, "SUB OKAY: " .. ret.url )
 								else -- continue the thread
 									table.insert( co, thing )
 								end
 							--else
-								--print( "err", "res, ret: ".. tostring( res ) .. ", ".. tostring( ret ) )
+								--print( err, "res, ret: ".. tostring( res ) .. ", ".. tostring( ret ) )
 							end
 						end
 					end
